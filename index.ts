@@ -3,6 +3,7 @@ import userRoutes from "./routes/user-routes";
 import bookRoutes from "./routes/book-routes";
 import memberRoutes from "./routes/member-routes";
 import borrowRoutes from "./routes/borrow-routes";
+import returnRoutes from "./routes/return-routes";
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/user', userRoutes)
 app.use('/book', bookRoutes)
 app.use('/member', memberRoutes)
 app.use('/borrow', borrowRoutes)
+app.use('/return', returnRoutes)
 
 app.listen(3000, () => {
     console.log('Server is running on http://localhost:3000');
