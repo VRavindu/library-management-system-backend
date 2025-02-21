@@ -65,3 +65,13 @@ export async function getMemberById(memberId: string) {
         throw error;
     }
 }
+
+
+export async function getAllMembers() {
+    try {
+        return await prisma.member.findMany();
+    } catch (error) {
+        console.log("Error getting all members: ", error);
+        throw error;
+    }
+}

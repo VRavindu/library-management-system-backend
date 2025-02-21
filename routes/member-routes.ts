@@ -1,6 +1,6 @@
 import express from "express";
 import {Member} from "../model/Member";
-import {deleteMember, getMemberById, saveMember, updateMember} from "../database/member-data-store";
+import {deleteMember, getAllMembers, getMemberById, saveMember, updateMember} from "../database/member-data-store";
 
 const router =  express.Router();
 
@@ -46,6 +46,16 @@ router.get('/:id', async (req, res) => {
     } catch (error) {
         console.log("Error getting member: ", error);
         res.status(500).send("Error getting member");
+    }
+});
+
+router.get('/', async (req, res) => {
+    try {
+        const members = await getAllMembers();
+        res.status(200).send(members);
+    } catch (error) {
+        console.log("Error getting members: ", error);
+        res.status(500).send("Error getting members");
     }
 });
 
