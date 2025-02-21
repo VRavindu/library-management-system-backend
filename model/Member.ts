@@ -1,4 +1,3 @@
-// model/Member.ts
 export class Member {
     mem_id!: number;
     mem_name!: string;
@@ -6,4 +5,5 @@ export class Member {
     phoneNumber!: string;
     membershipStartDate!: Date;
     status!: string;
+    borrowedBooksCount!: string;
 }

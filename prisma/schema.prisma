@@ -14,8 +14,8 @@ datasource db {
 }
 
 model User {
-  username String  @unique
-  email    String  @unique
+  username String @unique
+  email    String @unique
   password String
 }
 
@@ -31,13 +31,30 @@ model Book {
   description   String
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
+
+  borrows Borrow[]
 }
 
 model Member {
-    id                  Int      @id @default(autoincrement())
-    name                String
-    email               String   @unique
-    phoneNumber         String
-    membershipStartDate DateTime
-    status              String
+  id                  Int      @id @default(autoincrement())
+  name                String
+  email               String   @unique
+  phoneNumber         String
+  membershipStartDate DateTime
+  status              String
+  borrowedBooksCount  Int      @default(0)
+
+  borrows Borrow[]
 }
+
+model Borrow {
+  id         Int       @id @default(autoincrement())
+  memberId   Int
+  bookId     Int
+  borrowDate DateTime  @default(now())
+  returnDate DateTime? // Make sure this field exists
+  dueDate    DateTime  // Add the dueDate field
+  member     Member    @relation(fields: [memberId], references: [id])
+  book       Book      @relation(fields: [bookId], references: [id])
+}
+

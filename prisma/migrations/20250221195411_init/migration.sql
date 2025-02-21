@@ -34,7 +34,26 @@ CREATE TABLE `Member` (
     `phoneNumber` VARCHAR(191) NOT NULL,
     `membershipStartDate` DATETIME(3) NOT NULL,
     `status` VARCHAR(191) NOT NULL,
+    `borrowedBooksCount` INTEGER NOT NULL DEFAULT 0,
 
     UNIQUE INDEX `Member_email_key`(`email`),
     PRIMARY KEY (`id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- CreateTable
+CREATE TABLE `Borrow` (
+    `id` INTEGER NOT NULL AUTO_INCREMENT,
+    `memberId` INTEGER NOT NULL,
+    `bookId` INTEGER NOT NULL,
+    `borrowDate` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `returnDate` DATETIME(3) NULL,
+    `dueDate` DATETIME(3) NOT NULL,
+
+    PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `Borrow` ADD CONSTRAINT `Borrow_memberId_fkey` FOREIGN KEY (`memberId`) REFERENCES `Member`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE `Borrow` ADD CONSTRAINT `Borrow_bookId_fkey` FOREIGN KEY (`bookId`) REFERENCES `Book`(`id`) ON DELETE RESTRICT ON UPDATE CASCADE;
