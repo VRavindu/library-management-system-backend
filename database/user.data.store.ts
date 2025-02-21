@@ -17,3 +17,16 @@ export async function saveUser(user: User) {
         throw error;
     }
 }
+
+export async function getUserByEmail(email: string) {
+    try {
+        return await prisma.user.findUnique({
+            where: {
+                email: email
+            }
+        });
+    } catch (error) {
+        console.log(`Error Getting User : ${error}`);
+        throw error;
+    }
+}
