@@ -52,3 +52,16 @@ export async function deleteMember(memberId: string) {
         throw error;
     }
 }
+
+export async function getMemberById(memberId: string) {
+    try {
+        return await prisma.member.findUnique({
+            where: {
+                id: parseInt(memberId)
+            }
+        });
+    } catch (error) {
+        console.log("Error getting member by id: ", error);
+        throw error;
+    }
+}
