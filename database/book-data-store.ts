@@ -58,3 +58,16 @@ export async function deleteBook(bookId: string) {
         throw error;
     }
 }
+
+export async function getBookById(bookId: string) {
+    try {
+        return await prisma.book.findUnique({
+            where: {
+                id: parseInt(bookId)
+            }
+        });
+    } catch (error) {
+        console.log("Error getting book by id: ", error);
+        throw error;
+    }
+}

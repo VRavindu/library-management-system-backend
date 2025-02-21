@@ -1,6 +1,6 @@
 import express from "express";
 import Book from "../model/Book";
-import {deleteBook, saveBook, updateBook} from "../database/book-data-store";
+import {deleteBook, getBookById, saveBook, updateBook} from "../database/book-data-store";
 
 const router = express.Router();
 
@@ -34,6 +34,17 @@ router.delete('/delete/:bookId', async (req, res) => {
         res.status(200).json(deletedBook);
     } catch (error) {
         console.log("Error deleting book: ", error);
+    }
+});
+
+router.get('/:bookId', async (req, res) => {
+    const bookId = req.params.bookId;
+    try {
+        const book = await getBookById(bookId);
+        res.status(200).json(book);
+    } catch (error) {
+        console.log("Error getting book: ", error);
+        res.status(500).send("Error getting book");
     }
 });
 
