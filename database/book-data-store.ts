@@ -45,3 +45,16 @@ export async function updateBook(bookId: string, book: Book) {
         throw error;
     }
 }
+
+export async function deleteBook(bookId: string) {
+    try {
+        return await prisma.book.delete({
+            where: {
+                id: parseInt(bookId)
+            }
+        });
+    } catch (error) {
+        console.log("Error deleting book: ", error);
+        throw error;
+    }
+}
