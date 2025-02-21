@@ -71,3 +71,12 @@ export async function getBookById(bookId: string) {
         throw error;
     }
 }
+
+export async function getAllBooks() {
+    try {
+        return await prisma.book.findMany();
+    } catch (error) {
+        console.log("Error getting all books: ", error);
+        throw error;
+    }
+}

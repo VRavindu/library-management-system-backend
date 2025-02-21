@@ -1,6 +1,6 @@
 import express from "express";
 import User from "../model/User";
-import {getUserByEmail, saveUser, updateUser} from "../database/user.data.store";
+import {getUserByEmail, saveUser, updateUser} from "../database/user-data.store";
 
 const router = express.Router();
 
