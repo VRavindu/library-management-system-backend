@@ -19,3 +19,23 @@ export async function saveMember(member: Member) {
         throw error;
     }
 }
+
+export async function updateMember(memberId: string, member: Member) {
+    try {
+        return await prisma.member.update({
+            where: {
+                id: parseInt(memberId)
+            },
+            data: {
+                name: member.mem_name,
+                email: member.mem_email,
+                phoneNumber: member.phoneNumber,
+                membershipStartDate: member.membershipStartDate,
+                status: member.status,
+            }
+        });
+    } catch (error) {
+        console.log("Error updating member: ", error);
+        throw error;
+    }
+}
