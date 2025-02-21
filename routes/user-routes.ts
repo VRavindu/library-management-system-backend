@@ -1,6 +1,6 @@
 import express from "express";
 import User from "../model/User";
-import {getUserByEmail, saveUser} from "../database/user.data.store";
+import {getUserByEmail, saveUser, updateUser} from "../database/user.data.store";
 
 const router = express.Router();
 
@@ -27,6 +27,18 @@ router.get('/login/:email', async (req, res) => {
     } catch (error) {
         console.log("Error getting user: ", error);
         res.status(500).send("Error getting user");
+    }
+});
+
+router.put('/update/:email', async (req, res) => {
+    const email: string = req.params.email;
+    const user: User = req.body as User;
+    try {
+        const updatedUser = await updateUser(email, user);
+        res.status(200).json(updatedUser);
+    } catch (error) {
+        console.log("Error updating user: ", error);
+        res.status(500).send("Error updating user");
     }
 });
 

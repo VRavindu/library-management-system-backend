@@ -1,5 +1,6 @@
 import { PrismaClient } from '@prisma/client';
 import User from "../model/User";
+import user from "../model/User";
 
 const prisma = new PrismaClient();
 
@@ -27,6 +28,23 @@ export async function getUserByEmail(email: string) {
         });
     } catch (error) {
         console.log(`Error Getting User : ${error}`);
+        throw error;
+    }
+}
+
+export async function updateUser(email: string, user: User) {
+    try {
+        return await prisma.user.update({
+            where: {
+                email: email
+            },
+            data: {
+                username: user.username,
+                password: user.password
+            }
+        });
+    } catch (error) {
+        console.log(`Error Updating User : ${error}`);
         throw error;
     }
 }
