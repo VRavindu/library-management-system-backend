@@ -39,3 +39,16 @@ export async function updateMember(memberId: string, member: Member) {
         throw error;
     }
 }
+
+export async function deleteMember(memberId: string) {
+    try {
+        return await prisma.member.delete({
+            where: {
+                id: parseInt(memberId)
+            }
+        });
+    } catch (error) {
+        console.log("Error deleting member: ", error);
+        throw error;
+    }
+}
