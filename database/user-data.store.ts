@@ -1,49 +1,34 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 import User from "../model/User";
-
 const prisma = new PrismaClient();
 
-export async function saveUser(user: User) {
-    try {
-        return await prisma.user.create({
-            data: {
-                username: user.username,
-                email: user.email,
-                password: user.password
-            }
-        });
-    } catch (error) {
-        console.log(`Error Saving User : ${error}`);
-        throw error;
-    }
+
+export async function createUser(user: User) {
+    const hashedPassword = await bcrypt.hash(user.password, 10);
+
+    const addedUser = await prisma.user.create({
+        data: {
+            username: user.username,
+            email: user.email,
+            password: hashedPassword,
+        },
+    });
+
+    console.log("User created:", addedUser);
+    return addedUser;
 }
 
-export async function getUserByEmail(email: string) {
-    try {
-        return await prisma.user.findUnique({
-            where: {
-                email: email
-            }
-        });
-    } catch (error) {
-        console.log(`Error Getting User : ${error}`);
-        throw error;
-    }
-}
+export async function verifyUserCredentials(identifier: string, password: string): Promise<boolean> {
+    const user = await prisma.user.findFirst({
+        where: {
+            OR: [{ username: identifier }, { email: identifier }],
+        },
+    });
 
-export async function updateUser(email: string, user: User) {
-    try {
-        return await prisma.user.update({
-            where: {
-                email: email
-            },
-            data: {
-                username: user.username,
-                password: user.password
-            }
-        });
-    } catch (error) {
-        console.log(`Error Updating User : ${error}`);
-        throw error;
+    if (!user) {
+        return false;
     }
+
+    return await bcrypt.compare(password, user.password);
 }

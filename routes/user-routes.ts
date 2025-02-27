@@ -1,45 +1,76 @@
 import express from "express";
+import { createUser, verifyUserCredentials } from "../database/user-data.store";
+import jwt, { Secret } from 'jsonwebtoken';
+import dotenv from 'dotenv';
 import User from "../model/User";
-import {getUserByEmail, saveUser, updateUser} from "../database/user-data.store";
 
+dotenv.config()
 const router = express.Router();
 
-router.post('/signup', async (req, res) => {
-    const user: User = req.body as User;
-    try {
-        const savedUser = await saveUser(user);
-        res.status(201).json(savedUser);
-    } catch (error) {
-        console.log("Error saving user: ", error);
-        res.status(500).send("Error saving user");
-    }
-});
+router.post("/login", async (req, res) => {
+    console.log('Login')
+    const { username, password } = req.body.user;
 
-router.get('/login/:email', async (req, res) => {
-    const email: string = req.params.email;
     try {
-        const user = await getUserByEmail(email);
-        if (user){
-            res.status(200).json(user);
+        const isVerified = await verifyUserCredentials(username, password);
+
+        if (isVerified) {
+            const token = jwt.sign({ username }, process.env.SECRET_KEY as Secret, { expiresIn: "1m" });
+            const refreshToken = jwt.sign({ username }, process.env.REFRESH_TOKEN as Secret, { expiresIn: "7d" });
+            res.json({ accessToken: token, refreshToken: refreshToken });
         } else {
-            res.status(404).send("User not found");
+            res.status(403).send('Invalid credentials');
         }
-    } catch (error) {
-        console.log("Error getting user: ", error);
-        res.status(500).send("Error getting user");
+    } catch (err) {
+        console.log(err);
+        res.status(400).send(err);
     }
 });
 
-router.put('/update/:email', async (req, res) => {
-    const email: string = req.params.email;
-    const user: User = req.body as User;
+router.post("/register", async (req, res) => {
+    console.log('Register', req.body);
+    const { username, email, password } = req.body;
+
+    const user: User = { username, email, password };
+
     try {
-        const updatedUser = await updateUser(email, user);
-        res.status(200).json(updatedUser);
-    } catch (error) {
-        console.log("Error updating user: ", error);
-        res.status(500).send("Error updating user");
+        const registration = await createUser(user);
+        res.status(201).json(registration);
+    } catch (err) {
+        console.log(err);
+        res.status(500).json(err);
     }
 });
+
+router.post("/refresh-token", async (req: any, res: any) => {
+    const authHeader = req.headers.authorization;
+    const refresh_token = authHeader?.split(' ')[1];
+
+    if (!refresh_token) return res.status(401).send('No token provided');
+
+    try {
+        const payload = jwt.verify(refresh_token as string, process.env.REFRESH_TOKEN as Secret) as { username: string, iat: number };
+        const token = jwt.sign({ username: payload.username }, process.env.SECRET_KEY as Secret, { expiresIn: "1m" });
+        res.json({ accessToken: token });
+    } catch (err) {
+        console.log(err);
+        res.status(401).json(err);
+    }
+});
+
+export function authenticateToken(req: express.Request, res: express.Response, next: express.NextFunction) {
+    const authHeader = req.headers.authorization;
+    const token = authHeader?.split(' ')[1];
+
+    if (!token) return res.status(401).send('No token provided');
+
+    try {
+        const payload = jwt.verify(token as string, process.env.SECRET_KEY as Secret) as { username: string, iat: number };
+        req.body.username = payload.username;
+        next();
+    } catch (err) {
+        res.status(401).send(err);
+    }
+}
 
 export default router;
