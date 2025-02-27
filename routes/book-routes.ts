@@ -1,13 +1,28 @@
 import express from "express";
+import path from "path";
+import multer from "multer";
 import Book from "../model/Book";
-import {deleteBook, getAllBooks, getBookById, saveBook, updateBook} from "../database/book-data-store";
+import { deleteBook, getAllBooks, getBookById, saveBook, updateBook } from "../database/book-data-store";
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './uploads/books'); // Save files in the 'uploads/books' folder
+  },
+  filename: (req, file, cb) => {
+    cb(null, Date.now() + path.extname(file.originalname));
+  }
+});
+
+const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.post('/save', async (req, res) => {
+router.post('/save', upload.single('image'), async (req, res) => {
     const book: Book = req.body as Book;
+    const imagePath = req.file?.path; 
+
     try {
-        const savedBook = await saveBook(book);
+        const savedBook = await saveBook(book, imagePath);
         res.status(201).json(savedBook);
     } catch (error) {
         console.log("Error saving book: ", error);
@@ -15,11 +30,14 @@ router.post('/save', async (req, res) => {
     }
 });
 
-router.put('/update/:bookId', async (req, res) => {
+router.put('/update/:bookId', upload.single('image'), async (req, res) => {
     const bookId = req.params.bookId;
+    console.log('Book ID:', bookId);
     const book: Book = req.body as Book;
+    const imagePath = req.file?.path;
+
     try {
-        const updatedBook = await updateBook(bookId, book);
+        const updatedBook = await updateBook(bookId, book, imagePath);
         res.status(200).json(updatedBook);
     } catch (error) {
         console.log("Error updating book: ", error);
@@ -53,8 +71,8 @@ router.get('/', async (req, res) => {
         const books = await getAllBooks();
         res.status(200).json(books);
     } catch (error) {
-        console.log("Error getting book: ", error);
-        res.status(500).send("Error getting book");
+        console.log("Error getting books: ", error);
+        res.status(500).send("Error getting books");
     }
 });
 

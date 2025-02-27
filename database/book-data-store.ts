@@ -3,18 +3,19 @@ import Book from "../model/Book";
 
 const prisma = new PrismaClient();
 
-export async function saveBook(book: Book) {
+export async function saveBook(book: Book, imagePath?: string) {
     try {
         return await prisma.book.create({
           data: {
               title: book.title,
               author: book.author,
               isbn: book.isbn,
-              publishedYear: book.publishedYear,
+              publishedYear: parseInt(book.publishedYear.toString()),
               genre: book.genre,
-              quantity: book.quantity,
-              available: book.available,
-              description: book.description
+              quantity: parseInt(book.quantity.toString()),
+              available: parseInt(book.available.toString()),
+              description: book.description,
+              imagePath: imagePath || '',
           }
         });
     } catch (error) {
@@ -23,7 +24,7 @@ export async function saveBook(book: Book) {
     }
 }
 
-export async function updateBook(bookId: string, book: Book) {
+export async function updateBook(bookId: string, book: Book, imagePath?: string) {
     try {
         return await prisma.book.update({
             where: {
@@ -33,11 +34,12 @@ export async function updateBook(bookId: string, book: Book) {
                 title: book.title,
                 author: book.author,
                 isbn: book.isbn,
-                publishedYear: book.publishedYear,
+                publishedYear: parseInt(book.publishedYear.toString()),
                 genre: book.genre,
-                quantity: book.quantity,
-                available: book.available,
-                description: book.description
+                quantity: parseInt(book.quantity.toString()),
+                available: parseInt(book.available.toString()),
+                description: book.description,
+                imagePath: imagePath || '',
             }
         });
     } catch (error) {

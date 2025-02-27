@@ -29,6 +29,7 @@ model Book {
   quantity      Int
   available     Int
   description   String
+  imagePath     String?
   createdAt     DateTime @default(now())
   updatedAt     DateTime @updatedAt
 

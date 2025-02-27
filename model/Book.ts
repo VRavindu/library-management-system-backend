@@ -8,6 +8,7 @@ class Book {
     quantity!: number;
     available!: number;
     description!: string;
+    imagePath?: string;
 }
 
 export default Book;
